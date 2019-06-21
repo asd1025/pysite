@@ -1,0 +1,36 @@
+{% extends '../base.html' %}
+
+{% block csslink %}
+<link href="/assets/css/user.css" rel="stylesheet" type="text/css">
+<script src="/assets/js/jquery/jquery-1.9.0.js"></script>
+<script>
+
+	$(function(){
+	var path=window.location.search;
+	notice = path.split('=')[1]
+	if(notice == 'require'){
+		alert('로그인이 필요한 작업입니다.')
+	}
+
+	});
+
+</script>
+{% endblock %}
+
+   {% block content %}
+			<div id="user">
+				<form id="login-form" name="loginform" method="post" action="/user/login">
+					{% csrf_token %}
+					<label class="block-label" for="email">이메일</label>
+					<input id="email" name="email" type="text" value="">
+					<label class="block-label" >패스워드</label>
+					<input name="password" type="password" value="">
+					{% if request.GET.result == 'fail' %}
+					<p>
+						로그인이 실패 했습니다.
+					</p>
+					{% endif %}
+					<input type="submit" value="로그인">
+				</form>
+			</div>
+ 	{% endblock %}

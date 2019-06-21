@@ -1,0 +1,54 @@
+{% extends '../base.html' %}
+{% load mathfilters %}
+
+{% block csslink %}
+<link href="/assets/css/board.css" rel="stylesheet" type="text/css">
+{% endblock %}
+
+   {% block content %}
+			<div id="board">
+				<form id="search_form" action="" method="post">
+					<input type="text" id="kwd" name="kwd" value="">
+					<input type="submit" value="찾기">
+				</form>
+				<table class="tbl-ex">
+					<tr>
+						<th>번호</th>
+						<th>제목</th>
+						<th>글쓴이</th>
+						<th>조회수</th>
+						<th>작성일</th>
+						<th>&nbsp;</th>
+					</tr>
+					{% for board in boardlist %}
+					<tr>
+						<td>{{ forloop.revcounter}}</td>
+						<td><a href="/board/view/{{board.id}}">{{board.title}}</a></td>
+						<td>{{board.user.name}}</td>
+						<td>{{board.hit}}</td>
+						<td>{{board.regdate | date:'Y-m-d H:i:s' }}</td>
+						<td><a href="" class="del">삭제</a></td>
+					</tr>
+					{% endfor %}
+
+				</table>
+				<!-- pager 추가 -->
+				<div class="pager">
+					<ul>
+						<li><a href="">◀</a></li>
+						<li><a href="">1</a></li>
+						<li class="selected">2</li>
+						<li><a href="">3</a></li>
+						<li>4</li>
+						<li>5</li>
+						<li><a href="">▶</a></li>
+					</ul>
+				</div>
+				<!-- pager 추가 -->
+
+
+				<div class="bottom">
+					<a href="/board/writeform" id="new-book">글쓰기</a>
+				</div>				
+			</div>
+ 	{% endblock %}
