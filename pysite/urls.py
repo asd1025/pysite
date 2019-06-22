@@ -46,6 +46,7 @@ urlpatterns = [
     path('board/view/<int:id>', board_views.view),
     path('board/modify/<int:id>', board_views.modify),
     path('board/update/<int:id>', board_views.update),
+    path('board/reply/<int:id>', board_views.reply),
 
 
 

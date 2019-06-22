@@ -1,4 +1,4 @@
-from django.db.models import Max
+from django.db.models import Max, F
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
@@ -8,7 +8,7 @@ from user.models import User
 
 
 def list(request):
-    board = Board.objects.all().order_by('-regdate')
+    board = Board.objects.all().order_by('-groupno','orderno')
     for g in board:
         print(g)
     data = {'boardlist': board}
@@ -39,7 +39,6 @@ def counter_max():
 def view(request,id=0):
     board=Board.objects.filter(id=id)
     data={'board':board[0]}
-    print(board)
     return render(request,'board/view.html',data)
 
 def modify(request,id=0):
@@ -48,6 +47,29 @@ def modify(request,id=0):
     return render(request,'board/modify.html',data)
 
 def update(request,id=0):
-    board=Board()
-    board.content =
-    return HttpResponseRedirect(f'board/view/{id}')
+    board = Board.objects.get(id=id)
+    board.content = request.POST['content']
+    board.title = request.POST['title']
+    board.save()
+    return HttpResponseRedirect(f'/board/view/{id}')
+
+def reply(request,id=0):
+    # groupno = 1 이고 orderno >= 2 의 게시물의
+    # orderno를 1씩 증가
+    # __gt, __lt, __gte, __lte
+    board = Board.objects.get(id=id)
+    # orderno update 후 insert
+    Board.objects.filter(groupno=board.id).filter(orderno__gte=board.orderno+1).update(orderno=F('orderno') + 1)
+    board.save()
+
+    reply=Board()
+    reply.title = request.POST['title']
+    reply.content = request.POST['content']
+    reply.user = User.objects.get(id=request.session['authuser']['id'])
+    reply.groupno = board.groupno
+    reply.orderno = board.orderno+1
+    reply.depth = board.depth+1
+    reply.save()
+    return HttpResponseRedirect(f'/board/')
+
+
