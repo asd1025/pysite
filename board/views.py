@@ -14,15 +14,14 @@ def getTotalCount():
     return count
 
 
-paging = Paging(allCount=getTotalCount())
-print(paging)
-
 def list(request):
-    getTotalCount()
-    board = Board.objects.all().order_by('-groupno','orderno')
-    #for g in board:
-    #   print(g)
-    data = {'boardlist': board}
+    paging = Paging(allCount=getTotalCount())
+    prevGroupNo = int(request.GET.get('prevGroupNo',0))
+    pageNo = int(request.GET.get('pageNo',1))
+    paging.getPaging(prevGroupNo,pageNo)
+    print(paging,'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+    board = Board.objects.all().order_by('-groupno','orderno')[paging.startPageNo:paging.startPageNo+paging.contentsCount]
+    data = {'boardlist': board, "paging":paging, 'page_list': range(paging.startPageGroupNo+1,paging.startPageGroupNo+paging.groupCount+1) }
     return render(request, 'board/list.html', data)
 
 def writeform(request):

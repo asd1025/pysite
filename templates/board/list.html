@@ -5,6 +5,7 @@
 <link href="/assets/css/board.css" rel="stylesheet" type="text/css">
 {% endblock %}
 
+
    {% block content %}
 			<div id="board">
 				<form id="search_form" action="" method="post">
@@ -54,13 +55,36 @@
 				<!-- pager 추가 -->
 				<div class="pager">
 					<ul>
-						<li><a href="">◀</a></li>
-						<li><a href="">1</a></li>
+						<li>
+                            {% if paging.prevGroupNo > 0 %}
+                            <a href="/board?prevGroupNo={{paging.prevGroupNo|sub:1}}">◀</a>
+                            {% endif %}
+                        </li>
+
+                        {% for i in  page_list %}
+						 {% if paging.pageNo == i %}
+						<li class="selected">
+                        {% else %}
+                        <li>
+                        {% endif %}
+                            {% if i <= paging.allPageCount %}
+                            <a href="/board?pageNo={{i}}&prevGroupNo={{paging.prevGroupNo}}">{{i}}</a>
+                            {% else %}
+                                {{i}}
+                            {% endif %}
+                        </li>
+                        <!--
 						<li class="selected">2</li>
 						<li><a href="">3</a></li>
 						<li>4</li>
-						<li>5</li>
-						<li><a href="">▶</a></li>
+						<li>5</li> -->
+                        {% endfor %}
+
+                        <li>
+                            {% if paging.prevGroupNo|add:1 < paging.allGroupCount %}
+                            <a href="?prevGroupNo={{paging.prevGroupNo|add:1}}">▶</a>
+                            {% endif %}
+                        </li>
 					</ul>
 				</div>
 				<!-- pager 추가 -->
