@@ -12,7 +12,8 @@ class Board(models.Model):
     groupno=models.IntegerField(default=0)
     orderno=models.IntegerField(default=0)
     depth=models.IntegerField(default=0)
+    delete=models.BooleanField(default=False)
     user=models.ForeignKey(User,to_field='id',on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.title}/{self.content}/{self.hit}/{self.groupno} /{self.orderno}/ {self.depth}/ {self.regdate}/{self.user}'
+        return f'{self.title}/{self.content}/{self.hit} :hit/{self.groupno}:groupno /{self.orderno} :orderno/ {self.depth}/ {self.regdate}/{self.user}'
