@@ -2,6 +2,7 @@ class Paging:
     groupCount = 5
     contentsCount=10
 
+
     def __init__(self,allCount=0,allPageCount=0):
         self.allCount = allCount
         self.prevGroupNo=0

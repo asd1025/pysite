@@ -8,8 +8,9 @@
 
    {% block content %}
 			<div id="board">
-				<form id="search_form" action="" method="post">
-					<input type="text" id="kwd" name="kwd" value="">
+				<form id="search_form" action="/board/search" method="post">
+					{% csrf_token %}
+					<input type="text" id="kwd" name="kwd" value="{{kwd}}">
 					<input type="submit" value="찾기">
 				</form>
 				<table class="tbl-ex">
@@ -57,7 +58,7 @@
 					<ul>
 						<li>
                             {% if paging.prevGroupNo > 0 %}
-                            <a href="/board?prevGroupNo={{paging.prevGroupNo|sub:1}}">◀</a>
+                            <a href="/board?prevGroupNo={{paging.prevGroupNo|sub:1}}&kwd={{kwd}}">◀</a>
                             {% endif %}
                         </li>
 
@@ -68,21 +69,16 @@
                         <li>
                         {% endif %}
                             {% if i <= paging.allPageCount %}
-                            <a href="/board?pageNo={{i}}&prevGroupNo={{paging.prevGroupNo}}">{{i}}</a>
+                            <a href="/board?pageNo={{i}}&prevGroupNo={{paging.prevGroupNo}}&kwd={{kwd}}">{{i}}</a>
                             {% else %}
                                 {{i}}
                             {% endif %}
                         </li>
-                        <!--
-						<li class="selected">2</li>
-						<li><a href="">3</a></li>
-						<li>4</li>
-						<li>5</li> -->
                         {% endfor %}
 
                         <li>
                             {% if paging.prevGroupNo|add:1 < paging.allGroupCount %}
-                            <a href="?prevGroupNo={{paging.prevGroupNo|add:1}}">▶</a>
+                            <a href="?prevGroupNo={{paging.prevGroupNo|add:1}} & kwd={{kwd}}}">▶</a>
                             {% endif %}
                         </li>
 					</ul>

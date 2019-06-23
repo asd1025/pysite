@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.db.models import Max, F
+from django.db.models import Max, F, Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
@@ -14,14 +14,27 @@ def getTotalCount():
     return count
 
 
-def list(request):
-    paging = Paging(allCount=getTotalCount())
+def search(request):
+    kwd = request.POST.get('kwd','')
+    return list(request,kwd)
+
+
+def list(request,kwd=''):
+
     prevGroupNo = int(request.GET.get('prevGroupNo',0))
     pageNo = int(request.GET.get('pageNo',1))
-    paging.getPaging(prevGroupNo,pageNo)
-    print(paging,'>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-    board = Board.objects.all().order_by('-groupno','orderno')[paging.startPageNo:paging.startPageNo+paging.contentsCount]
-    data = {'boardlist': board, "paging":paging, 'page_list': range(paging.startPageGroupNo+1,paging.startPageGroupNo+paging.groupCount+1) }
+    kwd=request.GET.get('kwd',kwd)
+    if kwd != '':
+        board = Board.objects.filter(Q(title__contains=kwd)|Q(content__contains=kwd)).filter(delete=False)
+        paging = Paging(allCount=len(board))
+        paging.getPaging(prevGroupNo, pageNo)
+        board = board.order_by('-groupno','orderno')[paging.startPageNo:paging.startPageNo+paging.contentsCount]
+    else :
+        paging = Paging(allCount=getTotalCount())
+        paging.getPaging(prevGroupNo, pageNo)
+        board = Board.objects.all().order_by('-groupno', 'orderno')[paging.startPageNo:paging.startPageNo + paging.contentsCount]
+    data = {'boardlist': board, "paging":paging, 'page_list': range(paging.startPageGroupNo+1,paging.startPageGroupNo+paging.groupCount+1),'kwd':kwd }
+
     return render(request, 'board/list.html', data)
 
 def writeform(request):
