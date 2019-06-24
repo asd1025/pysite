@@ -74,8 +74,8 @@ def view(request,id=0):
     if request.COOKIES.get('visits') is None:
         data=hit_check(id=str(id))
         response = render(request, 'board/view.html',data)
-        response.set_cookie('visits', str(id), max_age=10)
-        visits = request.COOKIES.get('visits')
+        response.set_cookie('visits', str(id), max_age=60*60)
+        #visits = request.COOKIES.get('visits')
         return response
 
     else:
@@ -84,7 +84,7 @@ def view(request,id=0):
         response = render(request, 'board/view.html', data)
         if  data['hitable'] :
             visits= visits +' | ' + str(id)
-        response.set_cookie('visits',visits,max_age=10)
+        response.set_cookie('visits',visits,max_age=60*60)
         return response
 
 def modify(request,id=0):
