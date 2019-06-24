@@ -25,7 +25,7 @@
 					{% for board in boardlist %}
                         {% if not board.delete  %}
 					<tr>
-						<td>{{ forloop.revcounter}}</td>
+						<td>{{ board.id}}</td>
 						<td style="text-align: left; padding-left:{{board.depth|mul:10 }}px;">
 							{% if board.depth > 0 %}
 							<img src="/assets/images/reply.png">

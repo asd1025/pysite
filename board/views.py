@@ -1,4 +1,4 @@
-from datetime import datetime
+
 
 from django.db.models import Max, F, Q
 from django.http import HttpResponseRedirect
@@ -17,7 +17,6 @@ def getTotalCount():
 def search(request):
     kwd = request.POST.get('kwd','')
     return list(request,kwd)
-
 
 def list(request,kwd=''):
 
@@ -58,9 +57,35 @@ def counter_max():
     max_groupno=0 if value['max_groupno'] is None else value['max_groupno']
     return max_groupno+1
 
+def count_check(request):
+
+   response= render(request,'board/list.html')
+   response.delete_cookie('hit')
+
+
+   if  request.COOKIES.get('hit') is None:
+       print(request.COOKIES.get('hit'),'SET ++++++++++++++')
+       print(request.COOKIES.get('hit'),'SET ++++++++++++++')
+       response.set_cookie('hit', '100', 60)
+       return response
+   else :
+       cookie = request.COOKIES.get('hit')
+       response.delete_cookie('hit')
+       print(cookie,'COOOOOOOOOOOOOOOOOKIE11')
+       return response
+
+
 def view(request,id=0):
-    board=Board.objects.filter(id=id)
-    data={'board':board[0]}
+    #count_check(request)
+    # response = render(request, 'board/list.html')
+    # response.delete_cookie('hit')
+    # cookie = request.COOKIES.get('hit')
+    # print(cookie, 'COOOOOOOOOOOOOOOOOKIE222')
+
+    board=Board.objects.get(id=id)
+    board.hit=board.hit+1
+    board.save()
+    data={'board':board}
     return render(request,'board/view.html',data)
 
 def modify(request,id=0):
@@ -69,6 +94,9 @@ def modify(request,id=0):
     return render(request,'board/modify.html',data)
 
 def update(request,id=0):
+    user_id = request.session.get('authuser', '')
+    if user_id == '':
+        return HttpResponseRedirect('/user/loginform?result=require')
     board = Board.objects.get(id=id)
     board.content = request.POST['content']
     board.title = request.POST['title']
@@ -76,9 +104,10 @@ def update(request,id=0):
     return HttpResponseRedirect(f'/board/view/{id}')
 
 def reply(request,id=0):
-    # groupno = 1 이고 orderno >= 2 의 게시물의
-    # orderno를 1씩 증가
-    # __gt, __lt, __gte, __lte
+    # __gt, __lt, __gte, __lte /// groupno = 1 이고 orderno >= 2 의 게시물의 orderno를 1씩 증가
+    user_id = request.session.get('authuser', '')
+    if user_id == '':
+        return HttpResponseRedirect('/user/loginform?result=require')
     board = Board.objects.get(id=id)
     # orderno update 후 insert
     Board.objects.filter(groupno=board.groupno).filter(orderno__gte=board.orderno+1).update(orderno=F('orderno') + 1)
@@ -95,6 +124,9 @@ def reply(request,id=0):
 
 
 def delete(request,id=0):
+    user_id = request.session.get('authuser', '')
+    if user_id == '':
+        return HttpResponseRedirect('/user/loginform?result=require')
     board=Board.objects.filter(id=id).update(delete=True)
     return HttpResponseRedirect(f'/board/')
 
