@@ -32,11 +32,13 @@
 			<div id="board" class="board-form">
 				<table class="tbl-ex">
 					<tr>
-						<th colspan="2">글보기</th>
+						<th colspan="4">글보기</th>
 					</tr>
 					<tr>
 						<td class="label">제목</td>
 						<td>{{board.title}}</td>
+						<td  >조회수</td>
+						<td  >{{board.hit}}</td>
 					</tr>
 					<tr>
 						<td class="label">내용</td>
@@ -45,6 +47,7 @@
 								{{board.content}}
 							</div>
 						</td>
+						<td colspan="3"></td>
 					</tr>
 				</table>
 				<br>

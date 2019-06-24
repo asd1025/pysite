@@ -57,36 +57,35 @@ def counter_max():
     max_groupno=0 if value['max_groupno'] is None else value['max_groupno']
     return max_groupno+1
 
-def count_check(request):
+def hit_check(visits='',id=0):
+    board = Board.objects.get(id=id)
 
-   response= render(request,'board/list.html')
-   response.delete_cookie('hit')
+    if id in visits and visits != '':
+        data={'board':board, 'hitable':False}
+        return data
 
-
-   if  request.COOKIES.get('hit') is None:
-       print(request.COOKIES.get('hit'),'SET ++++++++++++++')
-       print(request.COOKIES.get('hit'),'SET ++++++++++++++')
-       response.set_cookie('hit', '100', 60)
-       return response
-   else :
-       cookie = request.COOKIES.get('hit')
-       response.delete_cookie('hit')
-       print(cookie,'COOOOOOOOOOOOOOOOOKIE11')
-       return response
-
+    board.hit = board.hit + 1
+    board.save()
+    data = {'board': board, 'hitable': True}
+    return data
 
 def view(request,id=0):
-    #count_check(request)
-    # response = render(request, 'board/list.html')
-    # response.delete_cookie('hit')
-    # cookie = request.COOKIES.get('hit')
-    # print(cookie, 'COOOOOOOOOOOOOOOOOKIE222')
-
     board=Board.objects.get(id=id)
-    board.hit=board.hit+1
-    board.save()
-    data={'board':board}
-    return render(request,'board/view.html',data)
+    if request.COOKIES.get('visits') is None:
+        data=hit_check(id=str(id))
+        response = render(request, 'board/view.html',data)
+        response.set_cookie('visits', str(id), max_age=10)
+        visits = request.COOKIES.get('visits')
+        return response
+
+    else:
+        visits = request.COOKIES.get('visits')
+        data=hit_check(visits,str(id))
+        response = render(request, 'board/view.html', data)
+        if  data['hitable'] :
+            visits= visits +' | ' + str(id)
+        response.set_cookie('visits',visits,max_age=10)
+        return response
 
 def modify(request,id=0):
     board=Board.objects.filter(id=id)
